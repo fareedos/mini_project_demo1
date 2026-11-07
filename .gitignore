@@ -1,0 +1,12 @@
+# Virtuelle Python-Umgebung
+virtual/
+venv/
+.venv/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Pytest Cache
+.pytest_cache/
+
