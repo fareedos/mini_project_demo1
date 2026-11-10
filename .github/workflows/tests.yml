@@ -1,0 +1,49 @@
+# Name des Workflows, der im Reiter "Actions" angezeigt wird.
+name: Tests
+
+# Startet den Workflow bei jedem Push und Pull Request.
+on:
+  push:
+  pull_request:
+
+# Definiert die auszuführenden Jobs.
+jobs:
+  pytest:
+    # Führt den Job auf einem frischen Ubuntu-Runner von GitHub aus.
+    runs-on: ubuntu-latest
+    steps:
+      # Lädt den Inhalt des Repositorys auf den Runner.
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Installiert die für den Job benötigte Python-Version.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Installiert pip und alle im Projekt aufgeführten Python-Pakete.
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      # Installiert Chromium und die für den Browser benötigten Systemabhängigkeiten.
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+
+      # Führt die Tests mit pytest aus.
+      - name: Run tests
+        run: python -m pytest
+
+      # Lädt den HTML-Testbericht auch dann hoch, wenn vorherige Schritte fehlschlagen.
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          # Name, unter dem der Bericht in den Workflow-Artefakten erscheint.
+          name: pytest-report
+          # Pfad des von pytest erzeugten HTML-Berichts.
+          path: reports/report.html
+          # Der Workflow schlägt nicht fehl, falls kein Bericht erzeugt wurde.
+          if-no-files-found: ignore

@@ -36,7 +36,9 @@ def test_todo(page: Page) -> None:
 
     # Löscht die erledigten Todos.
     todos.clear_completed()
+    # Wechselt zurück zu den aktiven Todos, da das verbleibende Todo nicht erledigt ist.
+    todos.active_link()
     # Danach soll genau ein Todo übrig sein.
-    expect(page.get_by_role("listitem")).to_have_count(1)
+    expect(page.locator(".todo-list").get_by_role("listitem")).to_have_count(1)
     # Das übrig gebliebene Todo muss das aktive Todo sein.
     expect(page.get_by_role("listitem").filter(has_text="sport")).to_be_visible()
